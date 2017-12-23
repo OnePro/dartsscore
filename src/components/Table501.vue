@@ -11,7 +11,7 @@
     <b-modal id="modalEditor" ref="modalEditor" title="Score edit" @ok="handleOkEditor" @cancel="cancelEditor">
       <b-form inline @submit.stop.prevent="handleOkEditor">
         <b-input-group>
-          <b-form-input type="text" placeholder="Score" v-model="scoreEditor.score"></b-form-input>
+          <b-form-input type="text" placeholder="Score" v-model="editbleRow.score"></b-form-input>
         </b-input-group>
         <b-button size="sm" variant="danger" @click="deleteRow">Delete throw</b-button>
       </b-form>
@@ -34,7 +34,7 @@
       <em>add score like: 20+40+50 or 110 </em>
     </b-badge>
 
-    <b-table hover bordered :items="player.tableData" :small="true" :striped="false" @row-clicked="editThrow" @refreshed="refreshed">
+    <b-table hover bordered head-variant="light" :items="player.tableData" :small="true" :striped="false" @row-clicked="editThrow" @refreshed="refreshed">
       <template slot="score" slot-scope="data">
         <strong>{{data.item.score}}</strong>
       </template>
@@ -51,9 +51,9 @@ export default {
     return {
       throwCounter: 0,
       info: '',
-      currentRow: null,
+
       score: '',
-      scoreEditor: {}
+      editbleRow: {}
     }
   },
   methods: {
@@ -114,7 +114,7 @@ export default {
       this.$emit('addedNewScore', this.player.inputId) // call change focus element
     },
     editThrow(item, index, event) {
-      this.scoreEditor = {
+      this.editbleRow = {
         index: index,
         score: item.score
       }
@@ -125,17 +125,17 @@ export default {
       this.editRow()
     },
     cancelEditor() {
-      this.scoreEditor = {}
+      this.editbleRow = {}
     },
     editRow() {
-      this.player.tableData[this.scoreEditor.index].score = this.getaScore(
-        this.scoreEditor.score
+      this.player.tableData[this.editbleRow.index].score = this.getaScore(
+        this.editbleRow.score
       )
       this.recalculateScore()
     },
     deleteRow() {
       this.$refs.modalEditor.hide()
-      let index = this.scoreEditor.index
+      let index = this.editbleRow.index
       this.player.tableData.splice(index, 1)
       this.recalculateScore()
       // this.refreshed()
@@ -154,7 +154,7 @@ export default {
       this.$emit('refreshed')
     },
     showAlert() {
-      this.info = 'ERROR'
+      this.info = 'WRONG SCORE'
       this.showModal()
     },
     showCongrats() {
