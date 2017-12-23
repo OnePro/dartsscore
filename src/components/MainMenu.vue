@@ -1,16 +1,15 @@
 <template>
 
   <div>
-    <b-navbar type="dark" variant="primary" toggleable>
+    <b-navbar type="dark" variant="dark" toggleable>
       <b-navbar-toggle target="nav_dropdown_collapse"></b-navbar-toggle>
       <b-collapse is-nav id="nav_dropdown_collapse">
         <b-navbar-nav>
-          <b-nav-item href="#/" active>Home</b-nav-item>
-          <b-nav-item href="#/g501">501</b-nav-item>
-          <b-nav-item-dropdown text="User">
-            <b-dropdown-item href="#">Account</b-dropdown-item>
-            <b-dropdown-item href="#">Settings</b-dropdown-item>
-          </b-nav-item-dropdown>
+          <b-nav-item href="#/" :class="{ active: isActive('/') }">Home</b-nav-item>
+          <b-nav-item href="#/g501" :class="{ active: isActive('/g501') }">501</b-nav-item>
+        </b-navbar-nav>
+        <b-navbar-nav class="ml-auto">
+         <b-nav-item disabled>Dartsboard</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
@@ -27,13 +26,11 @@ export default {
     }
   },
   methods: {
-    /*    onClick(event) {
-     if (key === '0') {
-        this.$router.push('/')
-      } else if (key === '1') {
-        this.$router.push('/g501')
+    isActive(path) {
+      if (this.$route.fullPath === path) {
+        return true
       }
-     } */
+    }
   }
 }
 </script>

@@ -9,28 +9,36 @@
 
     <!-- Modal Editor -->
     <b-modal id="modalEditor" ref="modalEditor" title="Score edit" @ok="handleOkEditor" @cancel="cancelEditor">
-      <form @submit.stop.prevent="handleOkEditor">
+      <b-form inline @submit.stop.prevent="handleOkEditor">
         <b-input-group>
           <b-form-input type="text" placeholder="Score" v-model="scoreEditor.score"></b-form-input>
-          <b-button size="sm" variant="danger" @click="deleteRow">Delete attempt</b-button>
         </b-input-group>
-      </form>
+        <b-button size="sm" variant="danger" @click="deleteRow">Delete throw</b-button>
+      </b-form>
 
     </b-modal>
 
     <!-- Main -->
-    <h2><p class="text-center">{{totalRemain}}</p></h2>
+    <h1>
+      <div class="text-center">
+        <b-badge variant="danger">{{this.player.totalRemain}}</b-badge>
+      </div>
+    </h1>
+
     <b-input-group :right="calculateThrow()" class="mb-2 mr-sm-2 mb-sm-0">
-      <b-form-input v-model="score" @change="inputScore" :id="currentInputId" type="text" placeholder="Score">
+      <b-form-input v-model="score" @change="inputScore" :id="this.player.inputId" type="text" placeholder="Score">
       </b-form-input>
     </b-input-group>
-    <p>
-      <span class="badge badge-dark">
-        <em>Example add score: 20+40+50 or 110 </em>
-      </span>
-    </p>
 
-    <b-table hover :items="tableData" :small="true" :striped="false" @row-clicked="editThrow" @refreshed="refreshed"></b-table>
+    <b-badge variant="light">
+      <em>add score like: 20+40+50 or 110 </em>
+    </b-badge>
+
+    <b-table hover bordered :items="player.tableData" :small="true" :striped="false" @row-clicked="editThrow" @refreshed="refreshed">
+      <template slot="score" slot-scope="data">
+        <strong>{{data.item.score}}</strong>
+      </template>
+    </b-table>
   </div>
 </template>
 
@@ -42,13 +50,9 @@ export default {
   data() {
     return {
       throwCounter: 0,
-      gameScore: 501,
-      totalRemain: 0,
-      tableData: [],
       info: '',
       currentRow: null,
       score: '',
-      currentInputId: this.player.inputId,
       scoreEditor: {}
     }
   },
@@ -57,22 +61,22 @@ export default {
       let score = this.getaScore(this.score)
       this.score = ''
 
-      if (score > this.totalRemain) {
+      if (score > this.player.totalRemain) {
         this.showAlert()
         return
-      } else if (score === this.totalRemain) {
+      } else if (score === this.player.totalRemain) {
         this.showCongrats()
       }
 
-      this.totalRemain = this.totalRemain - score
+      this.player.totalRemain = this.player.totalRemain - score
 
       this.throwCounter++
-      this.tableData.push({
+      this.player.tableData.push({
         throw: this.throwCounter,
         score: score,
-        remain: this.totalRemain
+        remain: this.player.totalRemain
       })
-      console.log(score)
+      // console.log(score)
     },
     getNumber(value) {
       if (!value || Number.isNaN(Number(value))) {
@@ -107,7 +111,7 @@ export default {
       return totalScore
     },
     addedNewScore() {
-      this.$emit('addedNewScore', this.currentInputId) // call change focus element
+      this.$emit('addedNewScore', this.player.inputId) // call change focus element
     },
     editThrow(item, index, event) {
       this.scoreEditor = {
@@ -124,24 +128,26 @@ export default {
       this.scoreEditor = {}
     },
     editRow() {
-      this.tableData[this.scoreEditor.index].score = this.getaScore(this.scoreEditor.score)
+      this.player.tableData[this.scoreEditor.index].score = this.getaScore(
+        this.scoreEditor.score
+      )
       this.recalculateScore()
     },
     deleteRow() {
       this.$refs.modalEditor.hide()
       let index = this.scoreEditor.index
-      this.tableData.splice(index, 1)
+      this.player.tableData.splice(index, 1)
       this.recalculateScore()
       // this.refreshed()
     },
     recalculateScore() {
       this.throwCounter = 0
-      this.totalRemain = this.gameScore
-      for (var row in this.tableData) {
+      this.player.totalRemain = this.player.gameScore
+      for (var row in this.player.tableData) {
         this.throwCounter++
-        this.tableData[row].throw = this.throwCounter
-        this.totalRemain -= this.tableData[row].score
-        this.tableData[row].remain = this.totalRemain
+        this.player.tableData[row].throw = this.throwCounter
+        this.player.totalRemain -= this.player.tableData[row].score
+        this.player.tableData[row].remain = this.player.totalRemain
       }
     },
     refreshed() {
@@ -162,9 +168,6 @@ export default {
       this.$refs.ModalInfoRef.hide()
       this.$emit('addedNewScore', this.currentInputId)
     }
-  },
-  created() {
-    this.totalRemain = this.gameScore
   }
 }
 </script>

@@ -1,6 +1,17 @@
 <template>
   <div>
-    <h3>{{player.name}}</h3>
+    <b-row>
+      <b-col class="text-left">
+        
+          <h3><b-badge variant="dark"> {{player.name}}</b-badge></h3>
+          <b-btn size="sm" variant="link" @click="deletePlayer">delete</b-btn>
+          
+      </b-col>
+      <b-col>
+        
+      </b-col>
+    </b-row>
+
     <table501 :player="player" @addedNewScore='addedNewScore'></table501>
   </div>
 
@@ -16,6 +27,9 @@ export default {
   methods: {
     addedNewScore(currentInputId) {
       this.$emit('addedNewScore', currentInputId)
+    },
+    deletePlayer() {
+      this.$emit('deletePlayer', this.player)
     }
   }
 }

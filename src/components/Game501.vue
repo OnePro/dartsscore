@@ -2,22 +2,32 @@
   <div>
 
     <!-- <h3>501 game</h3> -->
-    <b-row class="row">
-      <b-col>
-        <b-btn v-b-modal.modalPrevent @click="showAddingPlayer" class="add_playerbtn">Add new player</b-btn>
-        <!-- Modal Component -->
-        <b-modal id="adding-new-player" ref="newplayermodal" title="Add new player" @ok="clickOkAddPlayer">
-          <form @submit.stop.prevent>
-            <b-form-input type="text" placeholder="Enter your name" v-model="newplayer.name"></b-form-input>
-          </form>
-        </b-modal>
+    <div class="game-buttons-group">
+      <b-row class="row">
 
-      </b-col>
-    </b-row>
+        <b-col>
+          <div>
+            <b-button-group size="sm">
+              <b-button variant="outline-dark" v-b-modal.modalPrevent @click="showAddingPlayer">Add new player</b-button>
+              <b-button variant='warning' @click="addNewGame">New game</b-button>
+              <b-button variant="primary" disabled>Save game</b-button>
+            </b-button-group>
+
+          </div>
+        </b-col>
+
+      </b-row>
+    </div>
+    <!-- Modal Component -->
+    <b-modal id="adding-new-player" ref="newplayermodal" title="Add new player" @ok="clickOkAddPlayer">
+      <form @submit.stop.prevent>
+        <b-form-input type="text" id="newplayername" placeholder="Enter your name" v-model="newplayer.name"></b-form-input>
+      </form>
+    </b-modal>
 
     <b-row class="row">
       <b-col v-for="player in players" :key="player.id">
-        <player :player='player' @addedNewScore="addedNewScore"></player>
+        <player :player='player' @addedNewScore="addedNewScore" @deletePlayer="deletePlayer"></player>
       </b-col>
     </b-row>
 
@@ -31,7 +41,16 @@ export default {
     return {
       newplayer: {}, // { id: 1, name: 'Bill', inputId: 'input-playerId-' + 1 },
       players: [],
-      inputsIdList: []
+      inputsIdList: [],
+      gameScore: 501
+    }
+  },
+  watch: {
+    players: function(newPlayers, oldPlayers) {
+      this.inputsIdList = []
+      for (let x in this.players) {
+        this.inputsIdList.push(this.players[x].inputId)
+      }
     }
   },
   methods: {
@@ -53,13 +72,11 @@ export default {
     },
     showAddingPlayer() {
       this.createNewUser()
-      console.log('adding new')
       this.$refs.newplayermodal.show()
     },
     addNewPlayer() {
       if (this.newplayer.name) {
         this.players.push(this.newplayer)
-        this.inputsIdList.push(this.newplayer.inputId)
       }
     },
     cancelAddingPlayer() {
@@ -71,16 +88,30 @@ export default {
       this.newplayer = {
         id: newID,
         inputId: 'inputplayerref' + newID,
-        name: ''
+        name: '',
+        tableData: [],
+        totalRemain: this.gameScore,
+        gameScore: this.gameScore
       }
+    },
+    addNewGame() {
+      for (let player in this.players) {
+        this.players[player].tableData = []
+        this.players[player].totalRemain = this.gameScore
+        this.players[player].gameScore = this.gameScore
+      }
+    },
+    deletePlayer(player) {
+      let playerIndex = this.players.indexOf(player)
+      this.players.splice(playerIndex, 1)
     }
   }
 }
 </script>
 
 <style>
-.add_playerbtn {
-  margin: 25px;
+.game-buttons-group {
+  padding: 1%;
 }
 </style>
 
