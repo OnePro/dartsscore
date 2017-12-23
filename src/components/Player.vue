@@ -1,14 +1,9 @@
 <template>
   <div>
-      
-        <div>
-            <b-col>
-                <h3>Player {{id}}</h3>
-                <table501></table501>
-            </b-col>
-        </div>
-      
+    <h3>{{player.name}}</h3>
+    <table501 :player="player" @addedNewScore='addedNewScore'></table501>
   </div>
+
 </template>
 
 <script>
@@ -17,7 +12,12 @@ export default {
   data() {
     return {}
   },
-  props: ['id']
+  props: ['player'],
+  methods: {
+    addedNewScore(currentInputId) {
+      this.$emit('addedNewScore', currentInputId)
+    }
+  }
 }
 </script>
 
