@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import BootstrapVue from 'bootstrap-vue'
+import Toasted from 'vue-toasted' // https://github.com/shakee93/vue-toasted#usage
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -14,6 +15,7 @@ import Player from '@/components/Player'
 import Table501 from '@/components/Table501'
 
 Vue.use(BootstrapVue)
+Vue.use(Toasted)
 Vue.component(StartPage.name, StartPage)
 Vue.component(Mainmenu.name, Mainmenu)
 Vue.component(Player.name, Player)

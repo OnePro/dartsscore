@@ -1,10 +1,17 @@
 <template>
   <div>
     <!-- Modal Info -->
-    <b-modal ref="ModalInfoRef" hide-footer>
+
+    <b-modal ref="modalFinishRef" hide-footer hide-header>
       <div class="d-block text-center">
         <h3>{{info}}</h3>
       </div>
+      <b-form-group>
+
+        <b-button variant="success" @click="finishingGame">Finish game</b-button>
+        <b-button variant="danger" @click="cancelFinishig">Cancel</b-button>
+
+      </b-form-group>
     </b-modal>
 
     <!-- Modal Editor -->
@@ -21,12 +28,12 @@
     <!-- Main -->
     <h1>
       <div class="text-center">
-        <b-badge variant="danger">{{this.player.totalRemain}}</b-badge>
+        <b-badge variant="danger">{{player.totalRemain}}</b-badge>
       </div>
     </h1>
 
-    <b-input-group :right="calculateThrow()" class="mb-2 mr-sm-2 mb-sm-0">
-      <b-form-input v-model="score" @change="inputScore" :id="this.player.inputId" type="text" placeholder="Score">
+    <b-input-group v-show="!gameData.finished" :right="calculateThrow()" class="mb-2 mr-sm-2 mb-sm-0">
+      <b-form-input v-model="score"  @change="inputScore" :id="player.inputId" type="text" placeholder="Score">
       </b-form-input>
     </b-input-group>
 
@@ -45,39 +52,47 @@
 <script>
 export default {
   name: 'Table501',
-  props: ['player'],
+  props: ['player', 'gameData'],
 
   data() {
     return {
       throwCounter: 0,
       info: '',
-
       score: '',
-      editbleRow: {}
+      editbleRow: {},
+      addingScore: false // check for recursive adding score in tableData after calling parent method
     }
   },
   methods: {
     addNewThrow() {
-      let score = this.getaScore(this.score)
+      if (this.addingScore) {
+        return // it's recursiv calling. for example in Safari
+      }
+      this.addingScore = true
+      let score = this.parsingScore(this.score)
       this.score = ''
 
-      if (score > this.player.totalRemain) {
-        this.showAlert()
-        return
-      } else if (score === this.player.totalRemain) {
-        this.showCongrats()
+      // add new element
+      let length = this.player.tableData.push({
+        // get for deleting
+        throw: this.throwCounter + 1,
+        score: score,
+        remain: this.player.totalRemain - score
+      })
+
+      this.calculateScore()
+
+      if (this.player.totalRemain < 0) {
+        this.player.tableData.splice(length - 1, 1) // delete last element
+        this.rebuildTableData()
+        this.snowWrongScore()
+      } else {
+        this.throwCounter++
       }
 
-      this.player.totalRemain = this.player.totalRemain - score
-
-      this.throwCounter++
-      this.player.tableData.push({
-        throw: this.throwCounter,
-        score: score,
-        remain: this.player.totalRemain
-      })
-      // console.log(score)
+      this.checkGame()
     },
+
     getNumber(value) {
       if (!value || Number.isNaN(Number(value))) {
         return 0
@@ -85,15 +100,19 @@ export default {
         return Number.parseInt(value)
       }
     },
+
     inputScore() {
       this.addNewThrow()
       this.addedNewScore()
+      this.addingScore = false
     },
+
     calculateThrow() {
-      let tempScore = this.getaScore(this.score)
+      let tempScore = this.parsingScore(this.score)
       return tempScore.toString()
     },
-    getaScore(score) {
+
+    parsingScore(score) {
       // if It's calculator
       let totalScore = 0
       let indexPlus = score.search('[+]')
@@ -110,9 +129,11 @@ export default {
       }
       return totalScore
     },
+
     addedNewScore() {
       this.$emit('addedNewScore', this.player.inputId) // call change focus element
     },
+
     editThrow(item, index, event) {
       this.editbleRow = {
         index: index,
@@ -120,50 +141,102 @@ export default {
       }
       this.$refs.modalEditor.show()
     },
+
     handleOkEditor(evt) {
       this.$refs.modalEditor.hide()
       this.editRow()
     },
+
     cancelEditor() {
       this.editbleRow = {}
     },
+
     editRow() {
-      this.player.tableData[this.editbleRow.index].score = this.getaScore(
+      // save old score
+      let oldScore = this.player.tableData[this.editbleRow.index].score
+
+      this.player.tableData[this.editbleRow.index].score = this.parsingScore(
         this.editbleRow.score
       )
-      this.recalculateScore()
+      this.calculateScore()
+      // cheking and comeback
+      if (this.player.totalRemain < 0) {
+        this.player.tableData[this.editbleRow.index].score = oldScore
+        this.snowWrongScore()
+      }
+
+      this.rebuildTableData()
+      this.checkGame()
     },
+
     deleteRow() {
       this.$refs.modalEditor.hide()
       let index = this.editbleRow.index
       this.player.tableData.splice(index, 1)
-      this.recalculateScore()
-      // this.refreshed()
+      this.rebuildTableData()
     },
-    recalculateScore() {
+
+    rebuildTableData() {
+      this.calculateScore()
       this.throwCounter = 0
-      this.player.totalRemain = this.player.gameScore
       for (var row in this.player.tableData) {
         this.throwCounter++
         this.player.tableData[row].throw = this.throwCounter
+      }
+    },
+
+    checkGame() {
+      if (!this.gameData.finished & (this.player.totalRemain === 0)) {
+        this.showFinishGame()
+      }
+    },
+
+    finishingGame() {
+      this.gameData.finished = true
+      this.gameData.winner = this.player.name
+      this.$refs.modalFinishRef.hide()
+    },
+
+    calculateScore() {
+      let tempScore = 0
+      this.player.totalRemain = this.player.gameScore
+      for (let row in this.player.tableData) {
+        tempScore += this.player.tableData[row].score
         this.player.totalRemain -= this.player.tableData[row].score
         this.player.tableData[row].remain = this.player.totalRemain
       }
+      return tempScore
     },
+
     refreshed() {
       this.$emit('refreshed')
     },
-    showAlert() {
+
+    snowWrongScore() {
       this.info = 'WRONG SCORE'
       this.showModal()
     },
-    showCongrats() {
+
+    showFinishGame() {
       this.info = this.player.name.toUpperCase() + ' WIN'
-      this.showModal()
+      this.$refs.modalFinishRef.show()
     },
+
+    cancelFinishig() {
+      this.$refs.modalFinishRef.hide()
+    },
+
     showModal() {
-      this.$refs.ModalInfoRef.show()
+      this.$toasted
+        .show(' ', {
+          type: 'error',
+          icon: 'error_outline',
+          position: 'bottom-center'
+        })
+        .text(this.info)
+        .goAway(1500)
     },
+
     hideModal() {
       this.$refs.ModalInfoRef.hide()
       this.$emit('addedNewScore', this.currentInputId)
