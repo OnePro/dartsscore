@@ -1,88 +1,91 @@
 <template>
-    <div>
+  <div>
 
-        <!-- <h3>Cricket</h3> -->
-        <div class="game-buttons-group">
-            <b-row class="row">
+    <!-- <h3>Cricket</h3> -->
+    <div class="game-buttons-group">
+      <b-row class="row">
 
-                <b-col>
-                    <div>
-                        <b-button-group size="sm">
-                            <b-button variant='warning' @click="addNewGame">New game</b-button>
-                            <b-button variant="primary" :disabled="!this.gameData.finished" @click="saveGame">Save game</b-button>
-                        </b-button-group>
+        <b-col>
+          <div>
+            <b-button-group size="sm">
+              <b-button variant='warning' @click="addNewGame">New game</b-button>
+              <b-button variant="primary" :disabled="!this.gameData.finished" @click="saveGame">Save game</b-button>
+            </b-button-group>
 
-                    </div>
-                </b-col>
+          </div>
+        </b-col>
 
-            </b-row>
-        </div>
-
-        <b-container fluid>
-            <b-row>
-
-                <table class="table table-light">
-                    <thead>
-                        <tr class="text-center">
-                            <th scope="col">
-                                <h3>
-                                    <b-badge variant="danger" v-show="currentPlayer === players[0]">
-                                        <b-input-group v-show="players[0].edit">
-                                            <b-input v-model="players[0].name" @change="players[0].edit = false"></b-input>
-                                            <b-btn @click="players[0].edit = false">ok</b-btn>
-                                        </b-input-group>
-                                        {{players[0].name}}</b-badge>
-                                    <b-badge variant="dark" v-show="currentPlayer != players[0]">{{players[0].name}}</b-badge>
-                                    <b-btn v-show="!players[0].edit" size="sm" variant="link" @click="createEdit(players[0])">
-                                        <i class="fas fa-edit"></i>
-                                    </b-btn>
-                                </h3>
-                            </th>
-
-                            <th scope="col">
-                                <b-btn class="info" @click="switchPlayer">Switch Player</b-btn>
-                            </th>
-
-                            <th scope="col">
-                                <h3>
-                                    <b-badge variant="danger" v-show="currentPlayer === players[1]">
-                                        <b-input-group v-show="players[1].edit">
-                                            <b-input v-model="players[1].name" @change="players[1].edit = false"></b-input>
-                                            <b-btn @click="players[1].edit = false">ok</b-btn>
-                                        </b-input-group>
-                                        {{players[1].name}}</b-badge>
-                                    <b-badge variant="dark" v-show="currentPlayer != players[1]">{{players[1].name}}</b-badge>
-
-                                    <b-btn v-show="!players[1].edit" size="sm" variant="link" @click="createEdit(players[1])">
-                                        <i class="fas fa-edit"></i>
-                                    </b-btn>
-                                </h3>
-                            </th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="target in targets" :key="targets.indexOf(target)">
-                            <!-- PLAYER 1 -->
-                            <td class="text-center"><cricketcounterview :counter="players[0].tableData[target].counter"></cricketcounterview></td>
-
-                            <!-- MAIN BOARD -->
-                            <td class="text-center">
-                                <b-btn @click="addThrow(currentPlayer, target)">{{target}}</b-btn>
-                            </td>
-
-                            <!-- PLAYER 2 -->
-                            <td class="text-center">
-                                <cricketcounterview :counter="players[1].tableData[target].counter"></cricketcounterview>
-                                <!-- <span>{{players[0].tableData[target].counter}}</span> -->
-                            </td>
-
-                        </tr>
-                    </tbody>
-                </table>
-            </b-row>
-        </b-container>
+      </b-row>
     </div>
+
+      <b-row>
+
+        <table class="table table-light">
+          <thead>
+            <tr class="text-center">
+              <th scope="col">
+                <h3>
+                  <b-badge variant="danger" v-show="currentPlayer === players[0]">
+                    <b-input-group v-show="players[0].edit">
+                      <b-input v-model="players[0].name" @change="players[0].edit = false"></b-input>
+                      <b-btn @click="players[0].edit = false">ok</b-btn>
+                    </b-input-group>
+                    {{players[0].name}}</b-badge>
+                  <b-badge variant="dark" v-show="currentPlayer != players[0]">{{players[0].name}}</b-badge>
+                  <b-btn v-show="!players[0].edit" size="sm" variant="link" @click="createEdit(players[0])">
+                    <i class="fas fa-edit"></i>
+                  </b-btn>
+                </h3>
+              </th>
+
+              <th scope="col">
+                <b-btn class="info" @click="switchPlayer">Switch Player</b-btn>
+              </th>
+
+              <th scope="col">
+                <h3>
+                  <b-badge variant="danger" v-show="currentPlayer === players[1]">
+                    <b-input-group v-show="players[1].edit">
+                      <b-input v-model="players[1].name" @change="players[1].edit = false"></b-input>
+                      <b-btn @click="players[1].edit = false">ok</b-btn>
+                    </b-input-group>
+                    {{players[1].name}}</b-badge>
+                  <b-badge variant="dark" v-show="currentPlayer != players[1]">{{players[1].name}}</b-badge>
+
+                  <b-btn v-show="!players[1].edit" size="sm" variant="link" @click="createEdit(players[1])">
+                    <i class="fas fa-edit"></i>
+                  </b-btn>
+                </h3>
+              </th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="target in targets" :key="targets.indexOf(target)">
+              <!-- PLAYER 1 -->
+              <td class="text-center">
+                <cricketcounterview :counter="players[0].tableData[target].counter" :target="target" :score="players[0].tableData[target].score"></cricketcounterview>
+              </td>
+
+              <!-- MAIN BOARD -->
+              <td class="text-center">
+                <h2>
+                  <b-btn class="btn btn-dark" @click="addThrow(currentPlayer, target)">{{target}}</b-btn>
+                </h2>
+              </td>
+
+              <!-- PLAYER 2 -->
+              <td class="text-center">
+                <cricketcounterview :counter="players[1].tableData[target].counter" :target="target" :score="players[1].tableData[target].score"></cricketcounterview>
+                <!-- <span>{{players[0].tableData[target].counter}}</span> -->
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </b-row>
+
+  </div>
 </template>
 
 <script>
@@ -153,7 +156,6 @@ export default {
     addThrow(player, target) {
       player.tableData[target].counter++
       this.recalculatePlayerScore(player)
-      // this.switchPlayer()
     },
 
     switchPlayer() {
