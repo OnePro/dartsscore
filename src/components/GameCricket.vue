@@ -86,9 +86,13 @@
 
                     </tr>
                     <tr>
-                        <td class="text-center"><h2>{{players[0].totalScore}}</h2></td>
+                        <td class="text-center">
+                            <h2>{{players[0].totalScore}}</h2>
+                        </td>
                         <td class="text-center"></td>
-                        <td class="text-center"><h2>{{players[1].totalScore}}</h2></td>
+                        <td class="text-center">
+                            <h2>{{players[1].totalScore}}</h2>
+                        </td>
                     </tr>
 
                 </tbody>
@@ -212,6 +216,8 @@ export default {
 
         if (!tableRow.close && playerRow.counter >= 3) {
           playerRow.score = (playerRow.counter - 3) * tableRow.target
+        } else {
+          playerRow.score = 0
         }
       }
 
