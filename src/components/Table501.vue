@@ -33,7 +33,7 @@
     </h1>
 
     <b-input-group v-show="!gameData.finished" :right="calculateThrow()" class="mb-2 mr-sm-2 mb-sm-0">
-      <b-form-input v-model="score"  @change="inputScore" :id="player.inputId" type="text" placeholder="Score">
+      <b-form-input v-model="score" @change="inputScore" :id="player.inputId" type="text" placeholder="Score">
       </b-form-input>
     </b-input-group>
 
@@ -231,7 +231,7 @@ export default {
         .show(' ', {
           type: 'error',
           icon: 'error_outline',
-          position: 'bottom-center'
+          position: 'top-center'
         })
         .text(this.info)
         .goAway(1500)

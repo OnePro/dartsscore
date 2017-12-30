@@ -13,6 +13,7 @@ import StartPage from '@/components/StartPage'
 import Mainmenu from '@/components/MainMenu'
 import Player from '@/components/Player'
 import Table501 from '@/components/Table501'
+import Cricketviewcounter from '@/components/CricketCouterView'
 
 Vue.use(BootstrapVue)
 Vue.use(Toasted)
@@ -20,6 +21,7 @@ Vue.component(StartPage.name, StartPage)
 Vue.component(Mainmenu.name, Mainmenu)
 Vue.component(Player.name, Player)
 Vue.component(Table501.name, Table501)
+Vue.component(Cricketviewcounter.name, Cricketviewcounter)
 
 Vue.config.productionTip = false
 

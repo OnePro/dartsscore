@@ -5,8 +5,8 @@
 
         <h3>
           <b-badge variant="dark"> {{player.name}}</b-badge>
+          <b-btn size="sm" variant="link" @click="deletePlayer"> <i class="fas fa-times-circle"></i></b-btn>
         </h3>
-        <b-btn size="sm" variant="link" @click="deletePlayer">delete</b-btn>
 
       </b-col>
       <b-col>
