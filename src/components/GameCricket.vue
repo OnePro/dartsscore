@@ -191,37 +191,49 @@ export default {
       this.currentPlayer = this.players[nextIndex]
     },
 
-    recalculatePlayerScore(player) {
-      for (let xtarget in this.targets) {
-        let target = this.targets[xtarget]
-        let playerRow = player.tableData[target]
-        let tableRow = this.cricketTable[target]
+    recalculatePlayerScore(player, target) {
+      let playerRow = player.tableData[target]
+      let tableRow = this.cricketTable[target]
 
-        // add or clear closer player
-        let closeIndex = tableRow.closer.indexOf(player)
-        if (playerRow.counter >= 3 && closeIndex === -1) {
-          // add new closer
-          tableRow.closer.push(player)
-        } else if (playerRow.counter < 3 && closeIndex > -1) {
-          // if present but not close
-          tableRow.closer.splice(closeIndex, 1)
-        }
-
-        // make close or unclose
-        if (tableRow.closer.length >= 2) {
-          tableRow.close = true
-        } else {
-          tableRow.close = false
-        }
-
-        if (!tableRow.close && playerRow.counter >= 3) {
-          playerRow.score = (playerRow.counter - 3) * tableRow.target
-        } else {
-          playerRow.score = 0
-        }
+      // add or clear closer player
+      let closeIndex = tableRow.closer.indexOf(player)
+      if (playerRow.counter >= 3 && closeIndex === -1) {
+        // add new closer
+        tableRow.closer.push(player)
+      } else if (playerRow.counter < 3 && closeIndex > -1) {
+        // if present but not close
+        tableRow.closer.splice(closeIndex, 1)
       }
 
-      this.recalculateTotalScore(player)
+      // make close or unclose
+      if (tableRow.closer.length >= 2) {
+        tableRow.close = true
+      } else {
+        tableRow.close = false
+      }
+
+      // this.recalculateTotalScore(player)
+    },
+
+    incrementScore(player, target) {
+      let playerRow = player.tableData[target]
+      let tableRow = this.cricketTable[target]
+      
+      if (!tableRow.close && playerRow.counter >= 3) {
+        playerRow.score = (playerRow.counter - 3) * tableRow.target
+      } else {
+        playerRow.score = 0
+      }
+    },
+
+    decrementScore(player, target) {
+      let playerRow = player.tableData[target]
+      let tableRow = this.cricketTable[target]
+      if (!tableRow.close && playerRow.counter >= 3) {
+        playerRow.score = (playerRow.counter - 3) * tableRow.target
+      } else {
+        playerRow.score = 0
+      }
     },
 
     recalculateTotalScore(player) {
