@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     // make new user template
-    createNewUser() {
+    createNewPlayer() {
       let newID = this.players.length + 1
       this.newplayer = {
         id: newID,
@@ -90,7 +90,7 @@ export default {
     },
 
     showAddingPlayer() {
-      this.createNewUser()
+      this.createNewPlayer()
       this.$refs.newplayermodal.show()
     },
 
@@ -172,6 +172,19 @@ export default {
   },
 
   created: function() {
+    if (this.players.length === 0) {
+      // adding default players
+
+      // player1
+      this.createNewPlayer()
+      this.newplayer.name = 'Player1'
+      this.players.push(this.newplayer)
+
+      // player2
+      this.createNewPlayer()
+      this.newplayer.name = 'Player2'
+      this.players.push(this.newplayer)
+    }
     this.updateGame()
   }
 }

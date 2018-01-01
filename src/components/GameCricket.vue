@@ -32,7 +32,7 @@
                                     </b-input-group>
                                     {{players[0].name}}</b-badge>
                                 <b-badge variant="dark" v-show="currentPlayer != players[0]">{{players[0].name}}</b-badge>
-                                <b-btn v-show="!players[0].edit" size="sm" variant="link" @click="createEdit(players[0])">
+                                <b-btn v-b-popover.hover="'rename'" v-show="!players[0].edit" size="sm" variant="link" @click="createEdit(players[0])">
                                     <i class="fas fa-edit"></i>
                                 </b-btn>
                             </h3>
@@ -52,7 +52,7 @@
                                     {{players[1].name}}</b-badge>
                                 <b-badge variant="dark" v-show="currentPlayer != players[1]">{{players[1].name}}</b-badge>
 
-                                <b-btn v-show="!players[1].edit" size="sm" variant="link" @click="createEdit(players[1])">
+                                <b-btn v-b-popover.hover="'rename'" v-show="!players[1].edit" size="sm" variant="link" @click="createEdit(players[1])">
                                     <i class="fas fa-edit"></i>
                                 </b-btn>
                             </h3>
